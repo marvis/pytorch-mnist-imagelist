@@ -7,6 +7,8 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 
+import dataset
+
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
 parser.add_argument('--batch-size', type=int, default=64, metavar='N',
@@ -39,7 +41,8 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 # 1: folder dataset
 # 2: imagelist
 
-data_from = 1
+data_from = 2
+
 if data_from == 0:
     input_channel = 1
     train_loader = torch.utils.data.DataLoader(
@@ -55,7 +58,8 @@ if data_from == 0:
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])),
         batch_size=args.batch_size, shuffle=True, **kwargs)
-elif data_from == 1:
+
+elif data_from == 1: # folder
     input_channel = 3
     train_loader = torch.utils.data.DataLoader(
         datasets.ImageFolder('./folder/train',
@@ -66,6 +70,23 @@ elif data_from == 1:
         batch_size=args.batch_size, shuffle=True, **kwargs)
     test_loader = torch.utils.data.DataLoader(
         datasets.ImageFolder('./folder/test', transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])),
+        batch_size=args.batch_size, shuffle=False, **kwargs)
+
+elif data_from == 2: # list
+    input_channel = 1
+    train_loader = torch.utils.data.DataLoader(
+        dataset.listDataset('train.txt', shuffle=True,
+                       transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])),
+        batch_size=args.batch_size, shuffle=True, **kwargs)
+    test_loader = torch.utils.data.DataLoader(
+        dataset.listDataset('test.txt', shuffle=False,
+                       transform=transforms.Compose([
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])),
