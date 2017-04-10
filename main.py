@@ -35,39 +35,47 @@ if args.cuda:
 
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
-#train_loader = torch.utils.data.DataLoader(
-#    datasets.MNIST('../data', train=True, download=True,
-#                   transform=transforms.Compose([
-#                       transforms.ToTensor(),
-#                       transforms.Normalize((0.1307,), (0.3081,))
-#                   ])),
-#    batch_size=args.batch_size, shuffle=True, **kwargs)
-#test_loader = torch.utils.data.DataLoader(
-#    datasets.MNIST('../data', train=False, transform=transforms.Compose([
-#                       transforms.ToTensor(),
-#                       transforms.Normalize((0.1307,), (0.3081,))
-#                   ])),
-#    batch_size=args.batch_size, shuffle=True, **kwargs)
+# 0: mnist from online
+# 1: folder dataset
+# 2: imagelist
 
-train_loader = torch.utils.data.DataLoader(
-    datasets.ImageFolder('./folder/train',
-                   transform=transforms.Compose([
-                       transforms.ToTensor(),
-                       transforms.Normalize((0.1307,), (0.3081,))
-                   ])),
-    batch_size=args.batch_size, shuffle=True, **kwargs)
-test_loader = torch.utils.data.DataLoader(
-    datasets.ImageFolder('./folder/test', transform=transforms.Compose([
-                       transforms.ToTensor(),
-                       transforms.Normalize((0.1307,), (0.3081,))
-                   ])),
-    batch_size=args.batch_size, shuffle=False, **kwargs)
+data_from = 1
+if data_from == 0:
+    input_channel = 1
+    train_loader = torch.utils.data.DataLoader(
+        datasets.MNIST('../data', train=True, download=True,
+                       transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])),
+        batch_size=args.batch_size, shuffle=True, **kwargs)
+    test_loader = torch.utils.data.DataLoader(
+        datasets.MNIST('../data', train=False, transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])),
+        batch_size=args.batch_size, shuffle=True, **kwargs)
+elif data_from == 1:
+    input_channel = 3
+    train_loader = torch.utils.data.DataLoader(
+        datasets.ImageFolder('./folder/train',
+                       transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])),
+        batch_size=args.batch_size, shuffle=True, **kwargs)
+    test_loader = torch.utils.data.DataLoader(
+        datasets.ImageFolder('./folder/test', transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])),
+        batch_size=args.batch_size, shuffle=False, **kwargs)
 
 
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 10, kernel_size=5)
+        self.conv1 = nn.Conv2d(input_channel, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         self.conv2_drop = nn.Dropout2d()
         self.fc1 = nn.Linear(320, 50)
