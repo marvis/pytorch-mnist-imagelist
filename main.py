@@ -113,7 +113,8 @@ class Net(nn.Module):
 
 model = Net()
 if args.cuda:
-    model.cuda()
+    model = torch.nn.DataParallel(model).cuda()
+    #model.cuda()
 
 optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 
