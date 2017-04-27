@@ -1,3 +1,7 @@
+#### version 0.3
+- [x] add multi-gpu supports
+- [ ] cudnn.benchmark = True
+
 #### version 0.2
 Add list dataset
 
